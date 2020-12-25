@@ -7,19 +7,19 @@
 
 function mailSender(){
 
-    var RESULT = "EMAIL_SENT";
+    var RESULT = "Email inviata";
     var ALIAS_SENDER = 'Casa Pisa';
     var N_SHEET = 3;        //sheet position
 
     var allSheets = SpreadsheetApp.getActiveSpreadsheet();  //open Spreadsheet
     var sheet = allSheets.getSheets()[N_SHEET - 1];   //get the N_SHEET sheet
 
-    var startRow = 1;   //Be careful: starts from 1
-    var numRows = 7; 
-    var startCol = 1;
-    var numCol = 9;
+    var START_ROW = 1;   //Be careful: starts from 1
+    var N_ROW = 7; 
+    var START_COL = 1;
+    var N_COL = 9;
     
-    var dataRange = sheet.getRange(startRow, startCol, numRows, numCol);
+    var dataRange = sheet.getRange(START_ROW, START_COL, N_ROW, N_COL);
     var data = dataRange.getValues();
   
     //when a modify occurs, check if emails must be sent
@@ -29,15 +29,12 @@ function mailSender(){
 
     //generate mail Subject
     var subject = "";
-    var newBill = false;
-    var reminder = false;
-    if(data[0][4] == true){
-        newBill = true;
+    var newBill = data[0][4];
+    var reminder = data[0][6];
+    if(newBill == true)
         subject = subject + "Nuove bollette"
-    }
 
-    if(data[0][6] == true){
-        reminder = true;
+    if(reminder == true){
         if(newBill == true)
             subject = subject + " + ";
         subject = subject + "Reminder";
@@ -45,33 +42,33 @@ function mailSender(){
 
     //if no subject print Error in Error cell
     if(newBill == false && reminder == false){
-        sheet.getRange(2, 8, 5, 1).setValue("Error: no subject or message.");
-        sheet.getRange(2, 9).setValue(false);
+        var ERROR_MSG = "Error: no subject or message.";
+        sheet.getRange(2, 8, 5, 1).setValue(ERROR_MSG);
         return;
     }
 
     var currentRow = 2;
+
+    var ADDRESS_COL = 3;
+    var MESSAGE_COL = 4;
+    var RESULT_COL = 8;
     //send an email for each user
     for(var i in data){
 
         var row = data[i];
-        var emailAddress = row[2];
+        var emailAddress = row[ADDRESS_COL - 1];
 
         if(emailAddress == "" || emailAddress == "Email Address")
             continue;
 
-        var message = row[3];
-        var emailResult = row[7];
+        var message = row[MESSAGE_COL - 1];
+        var emailResult = row[RESULT_COL - 1];
         if(mustSend == true){
             MailApp.sendEmail(emailAddress, subject, message, {name: ALIAS_SENDER});
-            sheet.getRange(currentRow, 8).setValue(RESULT);
+            sheet.getRange(currentRow, RESULT_COL).setValue(RESULT);
         }
         currentRow++;
     }
-
-    //TODO- wait 5 seconds
-
-    sheet.getRange(2, 9).setValue(false);
 
     //if a newBill occurs, modify tmp value in the cell A7
     if(newBill == true){

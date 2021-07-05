@@ -9,13 +9,21 @@ function mailSender(){
 
     var RESULT = "Email inviata";
     var ALIAS_SENDER = 'Casa Pisa';
-    var N_SHEET = 4;        //sheet position
+    var IGNORE_USER = ["Hai 0 bollette da pagare", "Nessuna nuova bolletta"];
+    var SHEET_NAME = "MailSystem";
+    var SHEET_LINK = "https://docs.google.com/spreadsheets/d/1taX0s2mz8e-8gzj9kDSj6mCkYaC0eS0crvhgXsRE6U8/edit?usp=sharing";
 
-    var allSheets = SpreadsheetApp.getActiveSpreadsheet();  //open Spreadsheet
-    var sheet = allSheets.getSheets()[N_SHEET - 1];   //get the N_SHEET sheet
+    var allSheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();  //open Spreadsheet
+    var sheet = null;
+
+    //find the correct sheet
+    for(var i = 0; i < allSheets.length; i++){
+        if(allSheets[i].getName() == SHEET_NAME)
+            sheet = allSheets[i];
+    }
 
     var START_ROW = 1;
-    var N_ROW = 7; 
+    var N_ROW = 8; 
     var START_COL = 1;
     var N_COL = 8;
     
@@ -47,40 +55,39 @@ function mailSender(){
         return;
     }
 
-    var currentRow = 2;
+    var currentRow = 0;
 
     var ADDRESS_COL = 2;
     var MESSAGE_COL = 3;
     var RESULT_COL = 7;
-    var IGNORE_USER = "Hai 0 bollette da pagare";
     //send an email for each user
     for(var i in data){
 
+        currentRow++;
         var row = data[i];
         var emailAddress = row[ADDRESS_COL - 1];
 
-        if(emailAddress == "" || emailAddress == "Email Address")
-            continue;
-
         var message = row[MESSAGE_COL - 1];
 
-        if(message.startsWith(IGNORE_USER))
+        if(message.startsWith(IGNORE_USER[0]) || message.startsWith(IGNORE_USER[1]))
             continue;
 
-        message = message + "\n\nPer maggiori informazioni consultare il foglio google su https://docs.google.com/spreadsheets/d/1taX0s2mz8e-8gzj9kDSj6mCkYaC0eS0crvhgXsRE6U8/edit?usp=sharing \n";
-        var emailResult = row[RESULT_COL - 1];
+        message = message + "\n\nPer maggiori informazioni consultare il foglio google su " + SHEET_LINK + " \n";
         if(mustSend == true){
-            MailApp.sendEmail(emailAddress, subject, message, {name: ALIAS_SENDER});
-            sheet.getRange(currentRow, RESULT_COL).setValue(RESULT);
+            try{
+                MailApp.sendEmail(emailAddress, subject, message, {name: ALIAS_SENDER});
+                sheet.getRange(currentRow, RESULT_COL).setValue(RESULT);
+            }catch(e){
+                //sheet.getRange(currentRow, RESULT_COL).setValue("An error occurred"+e);
+            }
         }
-        currentRow++;
     }
 
     //if a newBill occurs, modify tmp value in the cell A7
     if(newBill == true){
       var currentValue = data[7][1];
+      currentValue++;
       sheet.getRange("A8").setValue(currentValue);
     }
-    
   
 }

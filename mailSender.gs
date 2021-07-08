@@ -18,8 +18,10 @@ function mailSender(){
 
     //find the correct sheet
     for(var i = 0; i < allSheets.length; i++){
-        if(allSheets[i].getName() == SHEET_NAME)
+        if(allSheets[i].getName() == SHEET_NAME){
             sheet = allSheets[i];
+            break;
+        }
     }
 
     var START_ROW = 1;

@@ -1,57 +1,46 @@
-//input is name
-function messageReminder(id) {
+/*
+    @name_col: bill's name column
+    @deadline_col: deadlines column
+    @checkbox_col: checkboxs of the flatmate column
+    @amount_col: amounts of the flatmate column
 
-    //open sheets
-    var allSheets = SpreadsheetApp.getActiveSpreadsheet();
-    var inputSheet = allSheets.getSheets()[0];
+    each of this parameters are arrays
+*/
 
-    var startRow = 4;
-    var startCol = 3;
 
-    var rangeRow = 1000;
-    var rangeCol = 25;
-    
-    //select range
-    var inputDataRange = inputSheet.getRange(startRow,startCol, rangeRow, rangeCol);
-    var inputData = inputDataRange.getValues();
+function messageReminder(name_col, deadline_col, checkbox_col, amount_col) {
 
     var counterTot = 0;
     var scaduteCounter = 0;
     var outputString = "";
     var importoTotale = 0;
+    var importo = 0;
 
-    //for each row check if a flatmate hasn't payed the bill yet
-    for(var i in inputData){
+    for (var i = 0; i < checkbox_col.length; i++){
 
-        var row = inputData[i];
-        var name = row[0];
-
-        //if last row read the total amount
-        if(name == ""){       
-            outputString = outputString + "Per un totale di "+ importoTotale.toFixed(2) +"€";
-            break;
-        }
-
-        var scadenza = row[1];
-        var scadenzaDate = new Date(scadenza);
-        var currentDate = new Date();
-        var check = row[id-3];
-
-        if(check == false){
+        //boh =  boh + String(checkbox_col[i]);
+        //not payed yet
+        if(String(checkbox_col[i]) == "false"){
+            
             counterTot++;
-            var importo = row[id - 1];
-            importoTotale += importo;
-
+            importo = parseFloat(amount_col[i]);
+            importoTotale = parseFloat(importoTotale+importo);
+            bill_name = name_col[i];
+            var scadenzaDate = new Date(deadline_col[i]);
+            var currentDate = new Date();
+            
+            //deadline has passed
             if(currentDate.valueOf() > scadenzaDate.valueOf()){
                 scaduteCounter++;
-                outputString = outputString + name + " " + importo+"€ (SCADUTA)\n";
+                outputString = outputString + bill_name + " " + importo+"€ (SCADUTA)\n";
             }
             else
-                outputString = outputString + name + " " + importo+"€\n";
+                outputString = outputString + bill_name + " " + importo+"€\n";
 
         }
     }
+    
     outputString = "Hai "+counterTot+" bollette da pagare, di cui "+scaduteCounter+" scadute:\n" + outputString;
+    outputString = outputString+"Per un totale di "+importoTotale.toFixed(2)+"€ \n";
     return outputString;
-
 }

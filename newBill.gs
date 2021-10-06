@@ -1,55 +1,33 @@
 /*
-    @Overview: controlla se ci sono nuove bollette e in caso crea un apposito messaggio con importo da pagare e data di scadenza.
+    @Overview: controlla se ci sono nuove bollette per il singolo coinquilino.
 
     @Param:
-        indexSheet: foglio dove è presente lo storico delle bollette
-        id: la colonna degli importi di ciascun coinquilino
-        lastRow: ultima bolletta notificata
+        counter_new_bill: how many new bills are
+        bill_col: bill's name column
+        deadline_col: deadlines column
+        amount_col: amounts of the flatmate column
+
+        each of this parameters are arrays
 */
 
-function messageNew(indexSheet, id, lastNotified) {
+function messageNew(counter_new_bill, bill_col, deadline_col, amount_col) {
 
-    //open sheets
-    var allSheets = SpreadsheetApp.getActiveSpreadsheet();
-    var inputSheet = allSheets.getSheets()[indexSheet];
-
-    var startRow = lastNotified;
-    var startCol = 3;
-
-    var rangeRow = 10;
-    var rangeCol = 22;
-    
-    //select range
-    var inputDataRange = inputSheet.getRange(startRow,startCol, rangeRow, rangeCol);
-    var inputData = inputDataRange.getValues();
-
-    var counter = 0;
     var outputString = "";
+    var counter = parseInt(counter_new_bill);
 
-    for(var i in inputData){
-
-        var row = inputData[i];
-        var name = row[0];
-        if(name == "")
-            break;
-        
-        var importo = row[id - 3];
-        if(importo == "" || importo == null || importo == "-" || importo == '-')
+    for(var i = bill_col.length - parseInt(counter_new_bill); i < bill_col.length; i++){
+        importo = amount_col[i];
+        if(importo == "" || parseInt(importo) == 0 || importo == "-")
             continue;
-        
-        counter++;
-        outputString = outputString + name + ": " + importo +"€\n";
-        //TODO - inserire data scadenza della bolletta
-        //var scadenza = row[1];
-        //var scadenzaDate = new Date(scadenza);
-        //outputString = outputString + "entro "+ calculateDate() +"\n";
+        outputString = outputString + bill_col[i] + ": " + parseFloat(importo) +"€\n";
     }
+
     if(counter > 1)
         outputString = "Hai " + counter + " nuove bollette: \n"+outputString;
     else if(counter == 1)
         outputString = "Hai una nuova bolletta: \n"+outputString;
     else
-        return "Nessuna nuova bolletta.\n";
+        return "";
 
     
     return outputString+"\n";

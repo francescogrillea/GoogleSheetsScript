@@ -1,14 +1,17 @@
 /*
-    @name_col: bill's name column
-    @deadline_col: deadlines column
-    @checkbox_col: checkboxs of the flatmate column
-    @amount_col: amounts of the flatmate column
+    @Overview: controlla quali bollette non sono state pagate dal singolo inquilino.
 
-    each of this parameters are arrays
+    @Param:
+        bill_col: bill's name column
+        deadline_col: deadlines column
+        checkbox_col: checkboxs of the flatmate column
+        amount_col: amounts of the flatmate column
+
+        each of this parameters are arrays
 */
 
 
-function messageReminder(name_col, deadline_col, checkbox_col, amount_col) {
+function messageReminder(bill_col, deadline_col, checkbox_col, amount_col) {
 
     var counterTot = 0;
     var scaduteCounter = 0;
@@ -25,7 +28,7 @@ function messageReminder(name_col, deadline_col, checkbox_col, amount_col) {
             counterTot++;
             importo = parseFloat(amount_col[i]);
             importoTotale = parseFloat(importoTotale+importo);
-            bill_name = name_col[i];
+            bill_name = bill_col[i];
             var scadenzaDate = new Date(deadline_col[i]);
             var currentDate = new Date();
             

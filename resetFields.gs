@@ -1,10 +1,15 @@
 function resetFields(){
     
-    var N_SHEET = 4;
+    var sheet_name = "MailSystem";
     var DEFAULT_LINE = "";
 
-    var allSheets = SpreadsheetApp.getActiveSpreadsheet();  //open Spreadsheet
-    var sheet = allSheets.getSheets()[N_SHEET - 1];   //get the N_SHEET sheet
+    var allSheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();  //open Spreadsheet
+    var sheet = null;
+    for(var i = 0; i < allSheets.length; i++){
+        if (allSheets[i].getName() == sheet_name){
+            sheet = allSheets[i];
+        }
+    }
 
     var startRow = 1;   //Be careful: starts from 1
     var numRows = 8; 
@@ -20,8 +25,6 @@ function resetFields(){
 
     //wait 5seconds
     Utilities.sleep(5000)
-
-    sheet.getRange(2, 7, 6, 1).setValue(DEFAULT_LINE);
     sheet.getRange(2, 8).setValue(false);
 
 

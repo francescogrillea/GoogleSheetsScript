@@ -25,6 +25,8 @@ function resetFields(){
 
     //wait 5seconds
     Utilities.sleep(5000)
+
+    sheet.getRange(2, 7, 5, 1).setValue(DEFAULT_LINE);
     sheet.getRange(2, 8).setValue(false);
 
 

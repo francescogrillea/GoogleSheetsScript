@@ -11,7 +11,6 @@ function mailSender(){
     var ALIAS_SENDER = 'Casa Pisa';
     var IGNORE_USER = ["Hai 0 bollette da pagare", "Nessuna nuova bolletta"];
     var SHEET_NAME = "MailSystem";
-    var SHEET_LINK = "https://docs.google.com/spreadsheets/d/1taX0s2mz8e-8gzj9kDSj6mCkYaC0eS0crvhgXsRE6U8/edit?usp=sharing";
 
     var allSheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();  //open Spreadsheet
     var sheet = null;
@@ -74,7 +73,6 @@ function mailSender(){
         if(message.startsWith(IGNORE_USER[0]) || message.startsWith(IGNORE_USER[1]))
             continue;
 
-        message = message + "\n\nPer maggiori informazioni consultare il foglio google su " + SHEET_LINK + " \n";
         if(mustSend == true){
             try{
                 MailApp.sendEmail(emailAddress, subject, message, {name: ALIAS_SENDER});
@@ -83,13 +81,5 @@ function mailSender(){
                 //sheet.getRange(currentRow, RESULT_COL).setValue("An error occurred"+e);
             }
         }
-    }
-
-    //if a newBill occurs, modify tmp value in the cell A7
-    if(newBill == true){
-      var currentValue = data[7][1];
-      currentValue++;
-      sheet.getRange("A8").setValue(currentValue);
-    }
-  
+    }  
 }
